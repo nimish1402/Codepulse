@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils" // Make sure to import cn
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import useProject from "@/hooks/use-project"
 
 const items = [
     {
@@ -30,21 +31,23 @@ const items = [
     }
 ]
 
-const projects = [
-    {
-        name: "Project A"
-    },
-    {
-        name: "Project B"
-    },
-    {
-        name: "Project C"
-    }
-]
+// const projects = [
+//     {
+//         name: "Project A"
+//     },
+//     {
+//         name: "Project B"
+//     },
+//     {
+//         name: "Project C"
+//     }
+// ]
 
 export function AppSidebar() {
     const pathname = usePathname()
     const {open} = useSidebar()
+    const {projects, projectId, setProjectId} = useProject() // Assuming useProject returns projects
+    
     return (
         <Sidebar collapsible="icon" variant="floating">
             <SidebarHeader>
@@ -105,15 +108,17 @@ export function AppSidebar() {
 
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {projects.map(project => {
+                            {projects?.map(project => {
                                 return (
-                                    <SidebarMenuItem key={project.name}>
+                                    <SidebarMenuItem key={project.id}>
                                         <SidebarMenuButton asChild>
-                                            <div>
+                                            <div onClick={() => {
+                                                setProjectId(project.id) // Set the selected project ID
+                                            }}>
                                                 <div className = {cn(
                                                     'rounded-sm border size-6 flex items-center justify-center text-sm bg-white text-primary' ,
                                                     {
-                                                        'bg-primary text-white ' : true
+                                                        'bg-primary text-white ' : project.id === projectId,
                                                     }
                                                 )} >
                                                     {project.name[0]}
@@ -123,7 +128,7 @@ export function AppSidebar() {
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 )
-                            })}
+                            }) ?? []}
 
                             <div className="h-2"></div>
                             {open && (
